@@ -1,6 +1,8 @@
 # pyIndiaFactorInvesting
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/rraju26/pyIndiaFactorInvesting/main)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/rraju26/pyIndiaFactorInvesting/main?urlpath=lab)
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rraju26/pyIndiaFactorInvesting/blob/main/factor_based_analysis.ipynb)
+
 
 A Python-based resource for learning about factor investing concepts in the Indian market using Jupyter Notebooks.
 
@@ -21,8 +23,12 @@ Click the Binder badge above to launch the notebook in your browser without any 
    git clone https://github.com/rraju26/pyIndiaFactorInvesting.git
    cd pyIndiaFactorInvesting
 
+2. **Install the Required Libraries**:
+```bash
+pip install -r requirements.txt
 
-2. **Open the Jupyter Notebook**:
+
+3. **Open the Jupyter Notebook**:
     ```bash 
     jupyter notebook factor_based_analysis.ipynb
 
