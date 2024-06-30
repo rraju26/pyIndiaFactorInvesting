@@ -24,8 +24,8 @@ Click the Binder badge above to launch the notebook in your browser without any 
    cd pyIndiaFactorInvesting
 
 2. **Install the Required Libraries**:
-```bash
-pip install -r requirements.txt
+    ```bash
+    pip install -r requirements.txt
 
 
 3. **Open the Jupyter Notebook**:
