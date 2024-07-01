@@ -36,3 +36,11 @@ Alternatively, click the Google Colab badge to open the notebook in Google Colab
 ## About
 
 This project aims to provide a basic guide and tools for performing factor investing analysis in the Indian financial market. It leverages the power of Python and Jupyter Notebooks to make factor-based financial analysis accessible and interactive.
+
+# References
+1. Fama, E. F., & French, K. R. (1993). Common risk factors in the returns on stocks and bonds. *Journal of Financial Economics, 33*(1), 3-56.
+2. Carhart, M. M. (1997). On persistence in mutual fund performance. *The Journal of Finance, 52*(1), 57-82.
+3. Fama, E. F., & French, K. R. (2015). A five-factor asset pricing model. *Journal of Financial Economics, 116*(1), 1-22.
+4. Raju, R. (2022). Four and Five-Factor Models in the Indian Equities Market. *SSRN eLibrary*, March, 37
+5. Raju, R. (2022), A Five-Factor Asset Pricing Model: Preliminary Evidence from India, *SSRN eLibrary*, August, 33
+6. Data sourced from [Invespar Data Library: Data Library: Fama-French Factors, Momentum, and Low-Risk Factors for the Indian Market](http://invespar.com/research).
