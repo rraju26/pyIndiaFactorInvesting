@@ -1,0 +1,14 @@
+name: pyIndiaFactorInvesting
+channels:
+  - conda-forge
+dependencies:
+  - python=3.9.18
+  - jupyter
+  - notebook
+  - ipykernel
+  - pandas
+  - numpy
+  - matplotlib
+  - scipy
+  - seaborn
+  - statsmodels
