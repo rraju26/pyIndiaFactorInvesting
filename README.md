@@ -1,23 +1,32 @@
 # PyIndiaFactorInvesting
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/rraju26/pyIndiaFactorInvesting/main?urlpath=lab)
-[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rraju26/pyIndiaFactorInvesting/blob/main/factor_based_analysis.ipynb)
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rraju26/pyIndiaFactorInvesting/blob/main/notebooks/factor_based_analysis.ipynb)
 
 A Python-based resource for learning about factor investing concepts in the Indian market using Jupyter Notebooks.
 
 ## Directory Structure
 
-- `factor_based_analysis.ipynb`: Jupyter Notebook for the analysis.
+- `notebooks/`: Directory containing Jupyter Notebooks.
+    - `intro_to_ap.ipynb`: Introduction to Asset Pricing Models.
+    - `factor_based_analysis.ipynb`: Factor-based Analysis.
+ 
 - `data/`: Directory containing the sample data file.
-  - `fba_sample_data.csv`: Sample data file used in the notebook.
+  - `fba_sample_data.csv`: Sample data file used in the notebooks.
+
+## Prerequisites
+
+Ensure you have Python and Jupyter installed. If not, you can install them using Anaconda or pip.
 
 ## How to Use
 
-Click the Binder badge above to launch the notebook in your browser without any installation. The notebook will try to read the sample data file from the local `data` directory. If it is not available locally, it will fetch the file from the GitHub repository.
+Click the Binder badge above to launch the notebooks in your browser without any installation. The notebooks will try to read the sample data files from the local `data` directory. If they are not available locally, the files will be fetched from the GitHub repository.
 
-Alternatively, click the Google Colab badge to open the notebook in Google Colab. The notebook will automatically fetch the data file from the GitHub repository if it is not available locally.
+Alternatively, click the Google Colab badge to open the notebooks in Google Colab. The notebooks will automatically fetch the data files from the GitHub repository if they are not available locally.
 
-## Instructions
+## Instructions (for local usage)
+
+If you prefer to run the notebooks locally, follow these steps:
 
 1. **Clone this repository**:
    ```bash
@@ -28,10 +37,19 @@ Alternatively, click the Google Colab badge to open the notebook in Google Colab
     ```bash
     pip install -r requirements.txt
 
+3. **Open the Jupyter Notebooks**:
+    ```bash
+    jupyter notebook notebooks/intro_to_ap.ipynb
+    jupyter notebook notebooks/factor_based_analysis.ipynb
 
-3. **Open the Jupyter Notebook**:
-    ```bash 
-    jupyter notebook factor_based_analysis.ipynb
+## Notebooks
+1. **Introduction to Asset Pricing**: This notebook introduces key concepts in asset pricing and their applications in the Indian market.
+2. **Factor-Based Analysis**: This notebook covers the basics of factor based analysis and provides practical analysis examples.
+
+
+## Future Updates
+
+More notebooks will be added to cover additional topics. Suggestions welcome. 
 
 ## About
 
