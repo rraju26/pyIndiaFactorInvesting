@@ -43,13 +43,13 @@ If you prefer to run the notebooks locally, follow these steps:
     ```bash
     jupyter notebook notebooks/intro_to_ap.ipynb
     jupyter notebook notebooks/intro_multicoll.ipynb
-    jupyter notebook notebooks/factor_based_analysis.ipynb
+    jupyter notebook notebooks/factor_based analysis.ipynb
 
 
 ## Notebooks
 1. **[Introduction to Asset Pricing](notebooks/intro_to_ap.ipynb)**: This notebook introduces key concepts in asset pricing and their applications in the Indian market.
 2. **[Multicollinearity in Asset Pricing Models Using Indian Data: A Primer](notebooks/intro_multicoll.ipynb)**: This notebook explores the identification and mitigation of multicollinearity in asset pricing models using Indian financial data.
-2. **[Factor-Based Analysis](notebooks/factor_based_analysis.ipynb)**: This notebook covers the basics of factor based analysis and provides practical analysis examples.
+2. **[Factor-Based Analysis](notebooks/factor_based analysis.ipynb)**: This notebook covers the basics of factor based analysis and provides practical analysis examples.
 
 
 ## Future Updates
