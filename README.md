@@ -9,10 +9,12 @@ A Python-based resource for learning about factor investing concepts in the Indi
 
 - `notebooks/`: Directory containing Jupyter Notebooks.
     - `intro_to_ap.ipynb`: Introduction to Asset Pricing Models.
+    - `intro_multicoll.ipynb`: Multicollinearity in Asset Pricing Models Using Indian Data: A Primer
     - `factor_based_analysis.ipynb`: Factor-based Analysis.
  
-- `data/`: Directory containing the sample data file.
-  - `fba_sample_data.csv`: Sample data file used in the notebooks.
+- `data/`: Directory containing the sample data files.
+  - `fba_sample_data.csv`: Sample strategy data file used in the notebooks.
+  - `nifty_indices_rets_example.csv`: Monthly returns for some popular indices.
 
 ## Prerequisites
 
@@ -40,10 +42,13 @@ If you prefer to run the notebooks locally, follow these steps:
 3. **Open the Jupyter Notebooks**:
     ```bash
     jupyter notebook notebooks/intro_to_ap.ipynb
+    jupyter notebook notebooks/intro_multicoll.ipynb
     jupyter notebook notebooks/factor_based_analysis.ipynb
+
 
 ## Notebooks
 1. **Introduction to Asset Pricing**: This notebook introduces key concepts in asset pricing and their applications in the Indian market.
+2. **Multicollinearity in Asset Pricing Models Using Indian Data: A Primer**: This notebook explores the identification and mitigation of multicollinearity in asset pricing models using Indian financial data.
 2. **Factor-Based Analysis**: This notebook covers the basics of factor based analysis and provides practical analysis examples.
 
 
