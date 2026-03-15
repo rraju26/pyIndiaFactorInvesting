@@ -1,8 +1,9 @@
 name: pyIndiaFactorInvesting
 channels:
   - conda-forge
+  - defaults
 dependencies:
-  - python=3.9.18
+  - python=3.11
   - jupyter
   - notebook
   - ipykernel
@@ -10,5 +11,7 @@ dependencies:
   - numpy
   - matplotlib
   - scipy
-  - seaborn
   - statsmodels
+  - pip
+  - pip:
+    - indiafactorlibrary

@@ -1,4 +1,7 @@
-pandas
-statsmodels
 indiafactorlibrary
+pandas
+numpy
+statsmodels
 matplotlib
+scipy
+jupyter
