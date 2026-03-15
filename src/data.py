@@ -26,7 +26,7 @@ _SAMPLE_DIR = _REPO_ROOT / "data" / "sample"
 # ---------------------------------------------------------------------------
 
 _FF6_COLUMNS = ["MKT", "SMB5", "HML", "RMW", "CMA", "WML", "RF", "MF"]
-_FF6_RENAME: dict[str, str] = {}   # populated if library uses different names
+_FF6_CACHE = _REPO_ROOT / "data" / "invespar" / "ff6_factors.csv"
 
 
 def load_invespar_factors(
@@ -67,16 +67,18 @@ def load_invespar_factors(
     >>> factors.shape
     (96, 8)
     """
-    try:
-        from indiafactorlibrary import IndiaFactorLibrary  # type: ignore
-    except ImportError as exc:
-        raise ImportError(
-            "The 'indiafactorlibrary' package is required but not installed.\n"
-            "Install it with:  pip install indiafactorlibrary"
-        ) from exc
-
-    ifl = IndiaFactorLibrary()
-    raw: pd.DataFrame = ifl.load_ff6()
+    if _FF6_CACHE.exists():
+        raw = pd.read_csv(_FF6_CACHE, index_col=0, parse_dates=True)
+    else:
+        try:
+            from indiafactorlibrary import IndiaFactorLibrary  # type: ignore
+        except ImportError as exc:
+            raise ImportError(
+                "The 'indiafactorlibrary' package is required but not installed.\n"
+                "Install it with:  pip install indiafactorlibrary"
+            ) from exc
+        ifl = IndiaFactorLibrary()
+        raw = ifl.read('FF6')[0]
 
     # Normalise the index to a proper DatetimeIndex (month-end)
     if not isinstance(raw.index, pd.DatetimeIndex):
@@ -84,26 +86,12 @@ def load_invespar_factors(
     raw.index = raw.index.to_period("M").to_timestamp("M")
     raw.index.name = "Date"
 
-    # Rename columns to the project standard if needed
-    col_map = {c: c.upper() for c in raw.columns}
-    # Common alternative names returned by the library
-    col_map.update({
-        "Mkt-RF": "MKT",
-        "MKT-RF": "MKT",
-        "Mkt_RF": "MKT",
-        "Mom": "WML",
-        "MOM": "WML",
-        "SMB": "SMB5",
-    })
-    raw = raw.rename(columns=col_map)
-
-    # Ensure the MF convenience column exists (MKT + RF = gross market)
-    if "MF" not in raw.columns and "MKT" in raw.columns and "RF" in raw.columns:
-        raw["MF"] = raw["MKT"] + raw["RF"]
-
     # Keep only standard columns that exist in the loaded data
     available = [c for c in _FF6_COLUMNS if c in raw.columns]
     df = raw[available].copy()
+
+    # Library returns percent form (1.0 = 1 %); convert to decimal
+    df = df / 100.0
 
     # Optional date slicing
     if start is not None:
