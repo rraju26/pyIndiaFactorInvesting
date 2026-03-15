@@ -128,34 +128,36 @@ def load_invespar_factors(
 
 def load_nifty_sample(
     frequency: str = "monthly",
-    start: str = "2016-01-01",
-    end: str = "2019-12-31",
+    start: str = "2015-01-01",
+    end: str = "2020-12-31",
 ) -> pd.DataFrame:
     """Load the sample Nifty index dataset.
 
-    Reads ``data/sample/nifty_indices.csv`` (daily price levels), optionally
-    resamples to month-end, and returns percentage returns.
+    Reads ``data/sample/nifty_monthly_returns.csv``, which contains
+    pre-computed monthly returns in percentage form (6.1 = +6.1 %).
 
     Parameters
     ----------
-    frequency : {'monthly', 'daily'}
-        ``'monthly'`` resamples daily prices to month-end before computing
-        returns.  ``'daily'`` returns day-over-day percentage returns.
+    frequency : {'monthly'}
+        Only ``'monthly'`` is supported for this sample file.
+        Passing ``'daily'`` raises ``NotImplementedError``.
     start : str
-        Inclusive start date (default ``'2016-01-01'``).
+        Inclusive start date (default ``'2015-01-01'``).
     end : str
-        Inclusive end date (default ``'2019-12-31'``).
+        Inclusive end date (default ``'2020-12-31'``).
 
     Returns
     -------
     pd.DataFrame
-        Percentage returns (values in decimal form, 0.01 = 1 %) with a
+        Monthly returns in decimal form (0.01 = 1 %) with a
         ``DatetimeIndex``.  Columns mirror the index columns in the CSV.
 
     Raises
     ------
     FileNotFoundError
-        If ``data/sample/nifty_indices.csv`` does not exist.
+        If ``data/sample/nifty_monthly_returns.csv`` does not exist.
+    NotImplementedError
+        If *frequency* is ``'daily'`` (daily data not in this sample file).
     ValueError
         If *frequency* is not ``'monthly'`` or ``'daily'``, or if the
         resulting DataFrame is empty.
@@ -165,36 +167,37 @@ def load_nifty_sample(
     >>> rets = load_nifty_sample(frequency='monthly', start='2017-01-01')
     >>> rets.head()
     """
-    if frequency not in ("monthly", "daily"):
+    if frequency == "daily":
+        raise NotImplementedError(
+            "Daily frequency is not available in the sample file "
+            "nifty_monthly_returns.csv.  Only 'monthly' is supported."
+        )
+    if frequency != "monthly":
         raise ValueError(
             f"frequency must be 'monthly' or 'daily', got '{frequency}'."
         )
 
-    csv_path = _SAMPLE_DIR / "nifty_indices.csv"
+    csv_path = _SAMPLE_DIR / "nifty_monthly_returns.csv"
     if not csv_path.exists():
         raise FileNotFoundError(
             f"Sample data file not found: {csv_path}\n"
-            "Place 'nifty_indices.csv' in data/sample/ before calling this function."
+            "Place 'nifty_monthly_returns.csv' in data/sample/ before calling this function."
         )
 
-    prices = pd.read_csv(csv_path, index_col=0, parse_dates=True)
-    prices.index.name = "Date"
-    prices = prices.sort_index()
+    df = pd.read_csv(csv_path, index_col=0, parse_dates=True)
+    df.index.name = "Date"
+    df = df.sort_index()
 
-    # Slice to requested window before resampling
-    prices = prices.loc[pd.Timestamp(start): pd.Timestamp(end)]
+    df = df.loc[pd.Timestamp(start): pd.Timestamp(end)]
 
-    if prices.empty:
+    if df.empty:
         raise ValueError(
             f"No data in range {start} – {end}.  "
             "Check the date range against available data."
         )
 
-    if frequency == "monthly":
-        prices = prices.resample("ME").last()
-
-    returns = prices.pct_change().dropna(how="all")
-    return returns
+    # CSV values are in percent form (6.1 = +6.1 %); convert to decimal
+    return df / 100.0
 
 
 # ---------------------------------------------------------------------------
@@ -205,12 +208,11 @@ _FUND_LABELS = {i: f"Fund_{chr(65 + i)}" for i in range(26)}   # A–Z
 
 
 def load_fund_sample() -> pd.DataFrame:
-    """Load the sample fund NAV dataset and return anonymised monthly returns.
+    """Load the sample fund returns dataset.
 
-    Reads ``data/sample/fund_nav.csv``.  If the file contains NAV levels,
-    month-end prices are used to compute returns.  If the file already
-    contains returns (values < 1 in absolute terms on average), they are
-    used directly.  Fund columns are renamed Fund_A, Fund_B, … .
+    Reads ``data/sample/fund_returns.csv``, which contains pre-computed
+    monthly returns in percentage form (6.1 = +6.1 %) with columns
+    Fund_A, Fund_B, Fund_C.
 
     Parameters
     ----------
@@ -220,12 +222,12 @@ def load_fund_sample() -> pd.DataFrame:
     -------
     pd.DataFrame
         Monthly returns in decimal form with a ``DatetimeIndex`` (month-end).
-        Columns: ``Fund_A``, ``Fund_B``, … (anonymised).
+        Columns: ``Fund_A``, ``Fund_B``, ``Fund_C``.
 
     Raises
     ------
     FileNotFoundError
-        If ``data/sample/fund_nav.csv`` does not exist.
+        If ``data/sample/fund_returns.csv`` does not exist.
 
     Example
     -------
@@ -233,42 +235,19 @@ def load_fund_sample() -> pd.DataFrame:
     >>> funds.columns.tolist()
     ['Fund_A', 'Fund_B', 'Fund_C']
     """
-    csv_path = _SAMPLE_DIR / "fund_nav.csv"
+    csv_path = _SAMPLE_DIR / "fund_returns.csv"
     if not csv_path.exists():
         raise FileNotFoundError(
             f"Sample data file not found: {csv_path}\n"
-            "Place 'fund_nav.csv' in data/sample/ before calling this function."
+            "Place 'fund_returns.csv' in data/sample/ before calling this function."
         )
 
     df = pd.read_csv(csv_path, index_col=0, parse_dates=True)
     df.index.name = "Date"
     df = df.sort_index()
 
-    # Resample to month-end if higher frequency detected
-    if df.index.freq is None or df.index.freq.freqstr not in ("ME", "M", "BM"):
-        inferred = pd.infer_freq(df.index[:20]) if len(df) >= 20 else None
-        if inferred and inferred not in ("ME", "M", "BM", "MS"):
-            df = df.resample("ME").last()
-
-    # Detect whether data are NAV levels or returns
-    median_abs = df.abs().median().median()
-    if median_abs > 2:
-        # Looks like price/NAV levels — compute returns
-        df = df.pct_change().dropna(how="all")
-    else:
-        # Already returns; convert percentage points to decimal if needed
-        if median_abs > 0.5:
-            df = df / 100.0
-        df = df.dropna(how="all")
-
-    # Anonymise column names
-    rename_map = {
-        orig: _FUND_LABELS.get(i, f"Fund_{i}")
-        for i, orig in enumerate(df.columns)
-    }
-    df = df.rename(columns=rename_map)
-
-    return df
+    # CSV values are in percent form (6.1 = +6.1 %); convert to decimal
+    return df / 100.0
 
 
 # ---------------------------------------------------------------------------
