@@ -239,6 +239,159 @@ def load_fund_sample() -> pd.DataFrame:
 
 
 # ---------------------------------------------------------------------------
+# Fixed income factor proxies
+# ---------------------------------------------------------------------------
+
+_FI_FACTORS_CACHE = _REPO_ROOT / "data" / "invespar" / "fi_factors.csv"
+
+
+def load_fi_factors(
+    start: Optional[str] = None,
+    end: Optional[str] = None,
+) -> pd.DataFrame:
+    """Load TERM_IN and CREDIT_IN fixed income factor proxies for India.
+
+    Wraps ``IndiaFactorLibrary().read('fi_factors')`` and returns a tidy monthly
+    DataFrame ready for regression.  These are **synthetic benchmark-exposure
+    proxies** constructed from LSEG Datastream benchmark yields; they are not
+    directly observed investable total return indices (Raju 2026, SSRN 6419998).
+
+    A local CSV cache at ``data/invespar/fi_factors.csv`` is used when present
+    (faster for local execution); otherwise the library is called directly.
+
+    Parameters
+    ----------
+    start : str, optional
+        Inclusive start date, e.g. ``'2015-01-01'``.
+    end : str, optional
+        Inclusive end date, e.g. ``'2025-03-31'``.
+
+    Returns
+    -------
+    pd.DataFrame
+        Monthly factor returns in decimal form (0.01 = 1 %) with a
+        ``DatetimeIndex`` (month-end).  Columns: ``TERM_IN``, ``CREDIT_IN``.
+        CREDIT_IN is available from Jun 2012 onward.
+
+    Raises
+    ------
+    ImportError
+        If ``indiafactorlibrary`` is not installed and no cache file exists.
+    ValueError
+        If the resulting DataFrame is empty after date filtering.
+
+    Example
+    -------
+    >>> fi = load_fi_factors(start='2015-01-01')
+    >>> fi.columns.tolist()
+    ['TERM_IN', 'CREDIT_IN']
+    """
+    if _FI_FACTORS_CACHE.exists():
+        raw = pd.read_csv(_FI_FACTORS_CACHE, index_col=0, parse_dates=True)
+    else:
+        try:
+            from indiafactorlibrary import IndiaFactorLibrary  # type: ignore
+        except ImportError as exc:
+            raise ImportError(
+                "The 'indiafactorlibrary' package is required but not installed.\n"
+                "Install it with:  pip install indiafactorlibrary"
+            ) from exc
+        ifl = IndiaFactorLibrary()
+        raw = ifl.read('fi_factors')[0]
+
+    if not isinstance(raw.index, pd.DatetimeIndex):
+        raw.index = pd.to_datetime(raw.index)
+    raw.index = raw.index.to_period("M").to_timestamp("M")
+    raw.index.name = "Date"
+
+    df = raw.sort_index() / 100.0  # percent → decimal
+
+    if start is not None:
+        df = df.loc[pd.Timestamp(start):]
+    if end is not None:
+        df = df.loc[:pd.Timestamp(end)]
+
+    if df.empty:
+        raise ValueError(
+            f"No fixed income factor data in range ({start} – {end}).  "
+            "Check available history with load_fi_factors() (no date args)."
+        )
+
+    return df
+
+
+# ---------------------------------------------------------------------------
+# Fixed income fund sample
+# ---------------------------------------------------------------------------
+
+_FI_FUND_SAMPLE = _REPO_ROOT / "data" / "sample" / "fi_fund_returns.csv"
+
+
+def load_fi_fund_sample(
+    start: Optional[str] = None,
+    end: Optional[str] = None,
+) -> pd.DataFrame:
+    """Load five anonymised Indian fixed income fund monthly returns.
+
+    Reads ``data/sample/fi_fund_returns.csv``.  The five funds span the
+    debt-fund category spectrum: gilt (Fund_A), dynamic bond (Fund_B),
+    short duration (Fund_C), corporate bond (Fund_D), and credit risk (Fund_E).
+
+    Parameters
+    ----------
+    start : str, optional
+        Inclusive start date, e.g. ``'2015-01-01'``.
+    end : str, optional
+        Inclusive end date, e.g. ``'2025-03-31'``.
+
+    Returns
+    -------
+    pd.DataFrame
+        Monthly returns in decimal form (0.01 = 1 %) with a ``DatetimeIndex``
+        (month-end).  Columns: ``Fund_A``, ``Fund_B``, ``Fund_C``,
+        ``Fund_D``, ``Fund_E``.  Period: Jun 2012 – Mar 2025.
+
+    Raises
+    ------
+    FileNotFoundError
+        If the sample file does not exist.
+    ValueError
+        If the resulting DataFrame is empty after date filtering.
+
+    Example
+    -------
+    >>> funds = load_fi_fund_sample()
+    >>> funds.columns.tolist()
+    ['Fund_A', 'Fund_B', 'Fund_C', 'Fund_D', 'Fund_E']
+    """
+    if not _FI_FUND_SAMPLE.exists():
+        raise FileNotFoundError(
+            f"FI fund sample not found: {_FI_FUND_SAMPLE}\n"
+            "Place 'fi_fund_returns.csv' in data/sample/ before calling this function."
+        )
+
+    df = pd.read_csv(_FI_FUND_SAMPLE, index_col=0, parse_dates=True)
+    df.index.name = "Date"
+    if not isinstance(df.index, pd.DatetimeIndex):
+        df.index = pd.to_datetime(df.index)
+    df.index = df.index.to_period("M").to_timestamp("M")
+    df = df.sort_index() / 100.0  # percent → decimal
+
+    if start is not None:
+        df = df.loc[pd.Timestamp(start):]
+    if end is not None:
+        df = df.loc[:pd.Timestamp(end)]
+
+    if df.empty:
+        raise ValueError(
+            f"No FI fund data in range ({start} – {end}).  "
+            "Check available history with load_fi_fund_sample() (no date args)."
+        )
+
+    return df
+
+
+# ---------------------------------------------------------------------------
 # Alignment utility
 # ---------------------------------------------------------------------------
 
