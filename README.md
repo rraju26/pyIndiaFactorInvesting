@@ -26,7 +26,9 @@ pyIndiaFactorInvesting/
 │   ├── sample/         # Anonymised sample datasets (committed)
 │   └── invespar/       # Raw Invespar downloads (git-ignored)
 ├── requirements.txt
-└── environment.yml
+├── environment.yml
+├── pyproject.toml      # uv project definition + dependencies (PEP 621)
+└── uv.lock             # pinned versions for reproducible uv installs
 ```
 
 ---
@@ -82,6 +84,17 @@ jupyter notebook
 pip install -r requirements.txt
 jupyter notebook
 ```
+
+### Option 4 — uv
+
+[uv](https://docs.astral.sh/uv/) provisions the Python version *and* the dependencies in one step. After [installing uv](https://docs.astral.sh/uv/getting-started/installation/):
+
+```bash
+uv sync              # creates .venv with Python 3.11 + locked dependencies
+uv run jupyter lab
+```
+
+uv reads `.python-version` and `pyproject.toml`, so there is nothing else to configure. To change a dependency, edit `pyproject.toml` (or run `uv add <pkg>`), then commit the regenerated `uv.lock` so everyone resolves to the same versions.
 
 ---
 

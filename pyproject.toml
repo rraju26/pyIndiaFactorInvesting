@@ -1,0 +1,21 @@
+[project]
+name = "pyindiafactorinvesting"
+version = "0.1.0"
+description = "Educational notebooks on factor investing in Indian equity and fixed-income markets."
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+    "indiafactorlibrary",
+    "pandas<2.0",
+    "numpy<2",  # pandas 1.5.3 is built against numpy 1.x; numpy 2 breaks its C ABI
+    "statsmodels",
+    "matplotlib",
+    "scipy",
+    "jupyter",
+]
+
+# This is a notebooks repo, not a distributable package: the notebooks add the
+# repo root to sys.path and import `src` directly. Tell uv to manage the
+# environment and dependencies without trying to build/install the project.
+[tool.uv]
+package = false
