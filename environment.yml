@@ -7,7 +7,7 @@ dependencies:
   - jupyter
   - notebook
   - ipykernel
-  - pandas<2.0
+  - pandas>=2,<3
   - numpy<2
   - matplotlib
   - scipy
