@@ -1,6 +1,6 @@
 indiafactorlibrary
 pandas<2.0
-numpy
+numpy<2
 statsmodels
 matplotlib
 scipy
