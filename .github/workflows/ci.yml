@@ -1,0 +1,18 @@
+name: install-smoke-test
+on: [push, pull_request]
+jobs:
+  uv:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --locked
+      - run: uv run python -c "import pandas, numpy, scipy, statsmodels, matplotlib, indiafactorlibrary"
+  pip:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install -r requirements.txt
+      - run: python -c "import pandas, numpy, scipy, statsmodels, matplotlib, indiafactorlibrary"

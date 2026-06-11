@@ -91,10 +91,14 @@ jupyter notebook
 
 ```bash
 uv sync              # creates .venv with Python 3.11 + locked dependencies
-uv run jupyter lab
+uv run jupyter notebook
 ```
 
-uv reads `.python-version` and `pyproject.toml`, so there is nothing else to configure. To change a dependency, edit `pyproject.toml` (or run `uv add <pkg>`), then commit the regenerated `uv.lock` so everyone resolves to the same versions.
+uv reads `.python-version` and `pyproject.toml`, so there is nothing else to configure.
+
+### Changing dependencies
+
+There are three dependency lists — `pyproject.toml` (canonical), `requirements.txt`, and `environment.yml`. When changing a dependency, update all three, then run `uv lock` and commit the regenerated `uv.lock` so everyone resolves to the same versions. Never hand-edit or hand-merge `uv.lock` — on a merge conflict, resolve `pyproject.toml` and rerun `uv lock`. CI verifies that `uv.lock` matches `pyproject.toml` and that a fresh pip install imports cleanly.
 
 ---
 
